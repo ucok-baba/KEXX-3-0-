@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kexx-3-0 Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"></link>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #121212;
+            color: white;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(90deg, #FFD700 0%, #9370DB 100%);
+        }
+        
+        .server-stats-bg {
+            background: linear-gradient(180deg, #8B4513 0%, #4B0082 100%);
+        }
+        
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://z-cdn-media.chatglm.cn/files/667388b5-65cb-4f0b-b161-692e14cc4e88.jpeg?auth_key=1865082374-7419a8190ebb4c758cf5b7ea1ab41348-0-03b51d8517ab7868d8d7380873dab4cf');
+            background-size: cover;
+            background-position: center;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-overlay::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        
+        .developer-info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            align-items: center;
+            z-index: 10;
+        }
+        
+        .developer-photo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #FFD700;
+            margin-right: 10px;
+        }
+        
+        .developer-name {
+            color: #FFD700;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .login-form {
+            background-color: rgba(26, 26, 26, 0.9);
+            border-radius: 10px;
+            padding: 30px;
+            width: 350px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background-color: #333;
+            color: white;
+            margin-bottom: 15px;
+        }
+        
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background-color: #FFD700;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .btn-primary:hover {
+            background-color: #e6c200;
+        }
+        
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        /* Account Info Modal */
+        .account-info-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .account-card {
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(138, 43, 226, 0.3);
+        }
+
+        .account-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .account-title {
+            color: #FFD700;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .info-item {
+            display: flex;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .info-label {
+            width: 120px;
+            font-weight: 500;
+            color: #FFD700;
+        }
+
+        .info-value {
+            flex-grow: 1;
+            color: white;
+            font-size: 16px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        /* Styling for Attack Menu - Modified to match dashboard theme */
+        .attack-menu-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .attack-card {
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%); /* Dark blue gradient matching dashboard */
+            border-radius: 20px;
+            padding: 25px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(138, 43, 226, 0.3);
+        }
+
+        .attack-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .attack-title {
+            color: #FFD700; /* Gold color matching dashboard */
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .target-input {
+            background-color: #222;
+            border: 1px solid #333;
+            color: white;
+        }
+
+        .select-bug {
+            background: linear-gradient(180deg, #FFD700 0%, #e6c200 100%); /* Gold gradient */
+        }
+
+        .bug-button {
+            background: linear-gradient(180deg, #9370DB 0%, #7C3AED 100%); /* Purple gradient matching dashboard */
+            transition: all 0.3s ease;
+        }
+
+        .bug-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(147, 112, 219, 0.4);
+        }
+
+        .attack-target-btn {
+            background: linear-gradient(180deg, #A855F7 0%, #7C3AED 100%); /* Purple gradient */
+        }
+
+        /* Added styles for scrollable bug list */
+        .bug-list {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .bug-list.open {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Overlay -->
+    <div id="loginOverlay" class="login-overlay">
+        <!-- Developer Info Section -->
+        <div class="developer-info">
+            <img src="https://z-cdn-media.chatglm.cn/files/667388b5-65cb-4f0b-b161-692e14cc4e88.jpeg?auth_key=1865082374-7419a8190ebb4c758cf5b7ea1ab41348-0-03b51d8517ab7868d8d7380873dab4cf" alt="Developer Photo" class="developer-photo">
+            <div class="developer-name">DEVELOPER KEZXO</div>
+        </div>
+        
+        <div class="login-form">
+            <h2 class="text-2xl font-bold text-center mb-6">Login ke Kexx-3-0</h2>
+            
+            <form id="loginForm">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">Username</label>
+                    <input type="text" id="username" class="input-field" placeholder="Masukkan username" required>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-medium mb-2">Password</label>
+                    <input type="password" id="password" class="input-field" placeholder="Masukkan password" required>
+                </div>
+                
+                <button type="submit" class="btn-primary">Login</button>
+            </form>
+            
+            <div id="errorMessage" class="error-message hidden">
+                Username atau password salah!
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard Content (Hidden until login) -->
+    <div id="dashboardContent" style="display: none;">
+        <div class="max-w-md mx-auto bg-black min-h-screen pb-16">
+            <!-- Header -->
+            <header class="flex justify-between items-center p-4 border-b border-gray-800">
+                <button class="text-white text-xl">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="text-2xl font-extrabold">Kexx-3-0</h1>
+                <button id="accountBtn" class="text-yellow-400 text-xl">
+                    <i class="fas fa-user-circle"></i>
+                </button>
+            </header>
+
+            <!-- Main Content -->
+            <main class="p-4">
+                <!-- Banner with Image and Text -->
+                <div class="rounded-lg overflow-hidden mb-6 relative">
+                    <img src="https://z-cdn-media.chatglm.cn/files/038956ba-7ad9-499d-85ce-223faa9140ed.jpeg?auth_key=1865081933-79fb62a48e0747889d6642e9a0390f17-0-be491fed78dd18ad0f2474410d55127d" alt="Anime Character" class="w-full h-48 object-cover">
+                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-black bg-opacity-60">
+                        <div class="flex items-center text-yellow-400 mb-1">
+                            <i class="fas fa-snowflake mr-2"></i>
+                            <span class="font-bold text-xl">New Function</span>
+                        </div>
+                        <p class="text-sm text-gray-200">
+                            Kexx kini hadir dengan penambahan beberapa function baru pada fitur
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Feature Icons -->
+                <div class="grid grid-cols-4 gap-4 mb-6">
+                    <div class="flex flex-col items-center">
+                        <div class="bg-yellow-600 w-14 h-14 rounded-full flex items-center justify-center mb-2">
+                            <i class="fas fa-bolt text-xl"></i>
+                        </div>
+                        <span class="text-xs">DDoS Panel</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="bg-yellow-600 w-14 h-14 rounded-full flex items-center justify-center mb-2">
+                            <i class="fas fa-bug text-xl"></i>
+                        </div>
+                        <span class="text-xs">Bug Menu</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="bg-yellow-600 w-14 h-14 rounded-full flex items-center justify-center mb-2">
+                            <i class="far fa-comment-alt text-xl"></i>
+                        </div>
+                        <span class="text-xs">Chat</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="bg-yellow-600 w-14 h-14 rounded-full flex items-center justify-center mb-2">
+                            <i class="fas fa-cog text-xl"></i>
+                        </div>
+                        <span class="text-xs">Account</span>
+                    </div>
+                </div>
+
+                <!-- Telegram Channel Button -->
+                <div class="gradient-bg rounded-lg p-4 mb-6 flex items-center justify-between">
+                    <div class="flex items-center">
+                        <i class="fas fa-users text-white text-xl mr-3"></i>
+                        <div>
+                            <p class="font-medium">Telegram Channel: Join To</p>
+                            <p class="text-sm">Get More Info!</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-white"></i>
+                </div>
+
+                <!-- Server Stats -->
+                <div class="server-stats-bg rounded-lg p-4">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-chart-bar text-white mr-2"></i>
+                        <h2 class="text-lg font-semibold">Server Stats</h2>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <i class="fas fa-user text-blue-300 mr-2"></i>
+                                <span>Online Users</span>
+                            </div>
+                            <span class="text-yellow-400 font-bold">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <i class="fas fa-paper-plane text-red-300 mr-2"></i>
+                                <span>Active Sender</span>
+                            </div>
+                            <span class="text-yellow-400 font-bold">0</span>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Bottom Navigation -->
+            <nav class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-800">
+                <div class="flex justify-around py-3">
+                    <div class="flex flex-col items-center text-yellow-400">
+                        <i class="fas fa-home text-xl"></i>
+                        <span class="text-xs mt-1">Home</span>
+                    </div>
+                    <div class="flex flex-col items-center text-gray-500">
+                        <i class="fas fa-phone text-xl"></i>
+                        <span class="text-xs mt-1">ZXO</span>
+                    </div>
+                    <div class="flex flex-col items-center text-gray-500">
+                        <i class="fas fa-bolt text-xl"></i>
+                        <span class="text-xs mt-1"></span>
+                    </div>
+                    <div class="flex flex-col items-center text-gray-500">
+                        <i class="far fa-comment-alt text-xl"></i>
+                        <span class="text-xs mt-1"></span>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Account Info Modal -->
+    <div id="accountInfoModal" class="account-info-modal">
+        <div class="account-card">
+            <div class="account-header">
+                <h2 class="account-title">Informasi Akun</h2>
+                <button id="closeAccountModal" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="mt-6">
+                <div class="info-item">
+                    <div class="info-label">Username:</div>
+                    <div class="info-value">free</div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Password:</div>
+                    <div class="info-value">free</div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Role:</div>
+                    <div class="info-value">free</div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Expired:</div>
+                    <div class="info-value">fee</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attack Menu Modal -->
+    <div id="attackMenuModal" class="attack-menu-modal">
+        <div class="attack-card">
+            <div class="attack-header">
+                <h2 class="attack-title">Attack Menu</h2>
+                <button id="closeAttackMenu" class="text-white text-xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="mb-6">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-rocket text-yellow-400 text-xl mr-3"></i>
+                    <h3 class="text-xl font-bold text-yellow-400">Attack Infinity</h3>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-yellow-400 mb-2">Nomor Target</label>
+                    <input type="text" class="w-full p-3 rounded-lg target-input" placeholder="Example: 62xxxxxxx">
+                </div
+                
+                <div class="mb-4">
+                    <label class="block text-yellow-400 mb-2">Select Bug</label>
+                    <div class="relative">
+                        <button id="toggleBugList" class="w-full p-3 rounded-lg select-bug flex justify-between items-center">
+                            <span>Pilih Jenis Bug</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        
+                        <div id="bugList" class="bug-list">
+                            <button class="bug-button w-full p-3 rounded-lg text-white font-medium">C1 NGENTOD</button>
+                            <button class="bug-button w-full p-3 rounded-lg text-white font-medium">INVIS DELAY</button>
+                            <button class="bug-button w-full p-3 rounded-lg text-white font-medium">SEPONG KUOATA</button>
+                            <button class="bug-button w-full p-3 rounded-lg text-white font-medium">DELAY IPHONE</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="attack-target-btn w-full p-4 rounded-lg text-white font-bold flex items-center justify-center mt-6">
+                    <i class="fas fa-rocket mr-2"></i>
+                    ATTACK TARGET
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            const loginOverlay = document.getElementById('loginOverlay');
+            const dashboardContent = document.getElementById('dashboardContent');
+            const errorMessage = document.getElementById('errorMessage');
+            const accountBtn = document.getElementById('accountBtn');
+            const accountInfoModal = document.getElementById('accountInfoModal');
+            const closeAccountModal = document.getElementById('closeAccountModal');
+            const attackMenuModal = document.getElementById('attackMenuModal');
+            const closeAttackMenu = document.getElementById('closeAttackMenu');
+            const bugMenuIcon = document.querySelector('.grid .flex:nth-child(2)'); // Bug Menu icon
+            const toggleBugList = document.getElementById('toggleBugList');
+            const bugList = document.getElementById('bugList');
+            
+            // Login functionality
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                
+                // Cek kredensial (username: free, password: free)
+                if (username === 'free' && password === 'free') {
+                    // Sembunyikan overlay login dan tampilkan dashboard
+                    loginOverlay.style.display = 'none';
+                    dashboardContent.style.display = 'block';
+                } else {
+                    errorMessage.classList.remove('hidden');
+                }
+            });
+
+                        // Account Info functionality
+            accountBtn.addEventListener('click', function() {
+                accountInfoModal.style.display = 'flex';
+            });
+
+            closeAccountModal.addEventListener('click', function() {
+                accountInfoModal.style.display = 'none';
+            });
+
+            // Attack Menu functionality
+            bugMenuIcon.addEventListener('click', function() {
+                attackMenuModal.style.display = 'flex';
+            });
+
+                      closeAttackMenu.addEventListener('click', function() {
+                attackMenuModal.style.display = 'none';
+            });
+
+            // Toggle bug list visibility
+            toggleBugList.addEventListener('click', function() {
+                bugList.classList.toggle('open');
+                const icon = toggleBugList.querySelector('i');
+                if (bugList.classList.contains('open')) {
+                    icon.classList.remove('fa-chevron-down');
+                    icon.classList.add('fa-chevron-up');
+                } else {
+                    icon.classList.remove('fa-chevron-up');
+                    icon.classList.add('fa-chevron-down');
+                }
+            });
+
+            // Close modal when clicking outside
+            accountInfoModal.addEventListener('click', function(e) {
+                if (e.target === accountInfoModal) {
+                    accountInfoModal.style.display = 'none';
+                }
+            });
+
+            attackMenuModal.addEventListener('click', function(e) {
+                if (e.target === attackMenuModal) {
+                    attackMenuModal.style.display = 'none';
+                    bugList.classList.remove('open');
+                    toggleBugList.querySelector('i').classList.remove('fa-chevron-up');
+                    toggleBugList.querySelector('i').classList.add('fa-chevron-down');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
